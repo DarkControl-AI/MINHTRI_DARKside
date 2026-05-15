@@ -1,0 +1,81 @@
+-- DARK CONTROL: DARK BLADE V2 (MOBILE OPTIMIZED)
+-- Author: MINHTRI_DARK V2
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+local mouse = player:GetMouse()
+local camera = workspace.CurrentCamera
+
+-- Cài đặt sức mạnh
+local damage = 50
+local cooldown = false
+local attackRange = 15
+
+-- Hàm tạo nhát chém bóng tối (Visual Effect)
+local function createDarkSlash(targetPos)
+    local slash = Instance.new("Part")
+    slash.Size = Vector3.new(0.5, 0.5, 10)
+    slash.CFrame = CFrame.lookAt(rootPart.Position, targetPos) * CFrame.new(0, 0, -5)
+    slash.Color = Color3.fromRGB(0, 0, 0) -- Màu đen bóng tối
+    slash.Material = Enum.Material.Neon
+    slash.CanCollide = false
+    slash.Anchored = true
+    slash.Parent = workspace
+    
+    -- Thêm vệt sáng màu tím/xanh cho ngầu
+    local light = Instance.new("PointLight", slash)
+    light.Color = Color3.fromRGB(0, 255, 255)
+    light.Range = 10
+
+    -- Hiệu ứng chém xoáy
+    local tween = game:GetService("TweenService"):Create(slash, TweenInfo.new(0.3), {
+        Size = Vector3.new(15, 0.1, 15),
+        Transparency = 1
+    })
+    tween:Play()
+    task.delay(0.3, function() slash:Destroy() end)
+end
+
+-- Hàm kích hoạt khi bấm màn hình
+local function onTouch()
+    if cooldown then return end
+    cooldown = true
+    
+    -- 1. Animation chém (Giả lập bằng cách xoay người nhẹ)
+    rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(30), 0)
+    task.wait(0.1)
+    rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(-30), 0)
+
+    -- 2. Tạo âm thanh chém
+    local sound = Instance.new("Sound", rootPart)
+    sound.SoundId = "rbxassetid://12222216" -- Tiếng kiếm chém
+    sound:Play()
+    task.delay(1, function() sound:Destroy() end)
+
+    -- 3. Tạo hiệu ứng hình ảnh
+    createDarkSlash(mouse.Hit.p)
+
+    -- 4. Gây sát thương
+    for _, target in pairs(workspace:GetChildren()) do
+        if target:FindFirstChild("Humanoid") and target ~= character then
+            local dist = (target.PrimaryPart.Position - rootPart.Position).Magnitude
+            if dist < attackRange then
+                target.Humanoid:TakeDamage(damage)
+                -- Hiệu ứng rung màn hình khi chém trúng
+                camera.CFrame = camera.CFrame * CFrame.new(math.random(-1,1)/5, 0, 0)
+            end
+        end
+    end
+
+    task.wait(0.5) -- Tốc độ đánh
+    cooldown = false
+end
+
+-- Kích hoạt trên Điện thoại (Bấm vào màn hình)
+game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        onTouch()
+    end
+end)
