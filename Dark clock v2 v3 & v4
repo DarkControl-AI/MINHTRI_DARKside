@@ -1,0 +1,187 @@
+-- DARK CONTROL: DARK CLOCK ULTIMATE SYSTEM (V2, V3, V4)
+-- Author: MINHTRI_DARK V2 (zongong123)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
+local tweenService = game:GetService("TweenService")
+local lighting = game.Lighting
+
+-- Cài đặt trạng thái
+local currentTier = 2 -- Bắt đầu từ V2, có thể nâng lên V3, V4
+local cooldown = false
+
+---------------------------------------------------------
+-- 🌌 DARK CLOCK V2: TIME DISTORTION (BÓP MÉO THỜI GIAN)
+---------------------------------------------------------
+local function activateDarkClockV2()
+    print("DARK CLOCK V2 ACTIVATED!")
+    
+    -- Hiệu ứng màn hình chuyển xanh đậm
+    local colorCorrection = Instance.new("ColorCorrectionEffect", lighting)
+    colorCorrection.Saturation = -0.3
+    colorCorrection.TintColor = Color3.fromRGB(0, 50, 150)
+    
+    -- Làm chậm tất cả người chơi khác xung quanh
+    for _, obj in pairs(workspace:GetChildren()) do
+        if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj ~= character then
+            obj.Humanoid.WalkSpeed = 4 -- Giảm tốc độ chạy xuống rất thấp
+        end
+    end
+    
+    -- Thời gian tác dụng: 5 giây
+    task.wait(5)
+    
+    -- Trả mọi thứ về bình thường
+    colorCorrection:Destroy()
+    for _, obj in pairs(workspace:GetChildren()) do
+        if obj:IsA("Model") and obj:FindFirstChild("Humanoid") then
+            obj.Humanoid.WalkSpeed = 16
+        end
+    end
+end
+
+---------------------------------------------------------
+-- 🌌 DARK CLOCK V3: EVENT HORIZON (CHÂN TRỜI SỰ KIỆN)
+---------------------------------------------------------
+local function activateDarkClockV3()
+    print("DARK CLOCK V3 ACTIVATED!")
+    
+    -- Hiệu ứng màn hình mất màu hoàn toàn (Trắng đen)
+    local colorCorrection = Instance.new("ColorCorrectionEffect", lighting)
+    colorCorrection.Saturation = -1
+    colorCorrection.Contrast = 0.5
+    
+    -- Đóng băng hoàn toàn Workspace (Thời gian dừng lại)
+    local frozenParts = {}
+    for _, part in pairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and not part:IsDescendantOf(character) and not part.Anchored then
+            part.Anchored = true
+            table.insert(frozenParts, part)
+        end
+    end
+    
+    -- Làm chậm cả tốc độ cử động của kẻ địch
+    for _, obj in pairs(workspace:GetChildren()) do
+        if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj ~= character then
+            obj.Humanoid.WalkSpeed = 0
+            if obj.PrimaryPart then obj.PrimaryPart.Anchored = true end
+        end
+    end
+    
+    -- Thời gian đóng băng: 8 giây
+    task.wait(8)
+    
+    -- Giải băng
+    colorCorrection:Destroy()
+    for _, part in pairs(frozenParts) do
+        if part and part.Parent then part.Anchored = false end
+    end
+    for _, obj in pairs(workspace:GetChildren()) do
+        if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj ~= character then
+            obj.Humanoid.WalkSpeed = 16
+            if obj.PrimaryPart then obj.PrimaryPart.Anchored = false end
+        end
+    end
+end
+
+---------------------------------------------------------
+-- 🌌 DARK CLOCK V4: REALITY GLITCH (LỖI THỰC TẠI TỐI CAO)
+---------------------------------------------------------
+local function activateDarkClockV4()
+    print("DARK CLOCK V4: REALITY COLLAPSE!")
+    
+    -- Hiệu ứng biến dạng thực tại cực mạnh
+    local colorCorrection = Instance.new("ColorCorrectionEffect", lighting)
+    colorCorrection.Saturation = -1
+    colorCorrection.Contrast = 2
+    
+    local blur = Instance.new("BlurEffect", lighting)
+    blur.Size = 15
+    
+    -- BẬT ĐỘNG ĐẤT TOÀN SERVER & NHẤC BỔNG ĐỐI THỦ
+    for i = 1, 40 do
+        humanoid.CameraOffset = Vector3.new(math.random(-2,2), math.random(-2,2), math.random(-2,2))
+        task.wait(0.05)
+    end
+    humanoid.CameraOffset = Vector3.new(0,0,0)
+    
+    -- Biến đổi toàn bộ môi trường xung quanh thành màu Neon trắng/đen (Mô phỏng Missing Texture)
+    local originalColors = {}
+    for _, part in pairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and not part:IsDescendantOf(character) then
+            originalColors[part] = {Color = part.Color, Material = part.Material}
+            part.Color = Color3.fromRGB(255, 255, 255)
+            part.Material = Enum.Material.Neon
+            
+            -- Đảo lộn trọng lực: Khiến mọi vật thể và đối thủ bay lơ lửng lên trời
+            part.Anchored = false
+            local float = Instance.new("BodyVelocity", part)
+            float.Velocity = Vector3.new(0, 20, 0)
+            float.MaxForce = Vector3.new(0, 4e5, 0)
+            task.delay(4, function() float:Destroy() end)
+        end
+    end
+    
+    task.wait(5) -- Duy trì trạng thái lỗi trong 5 giây
+    
+    -- Khôi phục lại thế giới sau đòn hủy diệt
+    colorCorrection:Destroy()
+    blur:Destroy()
+    for part, data in pairs(originalColors) do
+        if part and part.Parent then
+            part.Color = data.Color
+            part.Material = data.Material
+        end
+    end
+end
+
+---------------------------------------------------------
+-- HỆ THỐNG ĐIỀU KHIỂN TRÊN ĐIỆN THOẠI (GUI BUTTONS)
+---------------------------------------------------------
+local screenGui = Instance.new("ScreenGui", player.PlayerGui)
+screenGui.Name = "DarkClockUI"
+
+local button = Instance.new("TextButton", screenGui)
+button.Size = UDim2.new(0, 120, 0, 120)
+button.Position = UDim2.new(0.8, 0, 0.2, 0) -- Nằm bên phải góc trên màn hình
+button.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+button.TextColor3 = Color3.fromRGB(255, 0, 0)
+button.TextSize = 18
+button.Font = Enum.Font.SourceSansBold
+button.Text = "DARK CLOCK\nTIER V" .. tostring(currentTier)
+
+-- Nút chuyển đổi giữa V2, V3, V4
+local switchButton = Instance.new("TextButton", screenGui)
+switchButton.Size = UDim2.new(0, 120, 0, 40)
+switchButton.Position = UDim2.new(0.8, 0, 0.4, 0)
+switchButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+switchButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+switchButton.Text = "ĐỔI TIER"
+
+switchButton.MouseButton1Click:Connect(function()
+    if currentTier == 2 then currentTier = 3
+    elseif currentTier == 3 then currentTier = 4
+    else currentTier = 2 end
+    button.Text = "DARK CLOCK\nTIER V" .. tostring(currentTier)
+end)
+
+-- Kích hoạt chiêu khi bấm nút chính
+button.MouseButton1Click:Connect(function()
+    if cooldown then return end
+    cooldown = true
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100) -- Làm mờ nút khi hồi chiêu
+    
+    if currentTier == 2 then
+        activateDarkClockV2()
+    elseif currentTier == 3 then
+        activateDarkClockV3()
+    elseif currentTier == 4 then
+        activateDarkClockV4()
+    end
+    
+    task.wait(3) -- Cooldown giữa các lần dùng chiêu
+    button.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    cooldown = false
+end)
