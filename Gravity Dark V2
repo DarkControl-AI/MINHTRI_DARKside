@@ -1,0 +1,26 @@
+-- Gravity Dark V2
+local function applyGravityDark(position)
+    local blast = Instance.new("Part", workspace)
+    blast.Shape = Enum.PartType.Ball
+    blast.Size = Vector3.new(1,1,1)
+    blast.Position = position
+    blast.Transparency = 0.5
+    blast.Color = Color3.fromRGB(0, 0, 0) -- Màu đen đặc trưng
+    blast.CanCollide = false
+    blast.Anchored = true
+
+    -- Tạo hiệu ứng giãn nở
+    local tween = game:GetService("TweenService"):Create(blast, TweenInfo.new(1), {Size = Vector3.new(20, 20, 20), Transparency = 1})
+    tween:Play()
+
+    -- Hút đối thủ
+    for _, obj in pairs(workspace:GetChildren()) do
+        local humRoot = obj:FindFirstChild("HumanoidRootPart")
+        if humRoot and obj.Name ~= player.Name then
+            local dist = (humRoot.Position - position).Magnitude
+            if dist < 20 then
+                humRoot.Velocity = (position - humRoot.Position).Unit * 50 -- Kéo về tâm
+            end
+        end
+    end
+end
