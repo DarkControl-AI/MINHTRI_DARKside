@@ -1,0 +1,88 @@
+-- DARK CONTROL: ULTIMATE DESTRUCTION V4 (PLANETARY COLLAPSE)
+-- Author: MINHTRI_DARK (zongong123)
+
+local function activateDarkV4()
+    -- 1. MÁI NHÀ BAY LÊN
+    print("Step 1: Roof Levitation")
+    for _, part in pairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and (part.Name:find("Roof") or part.Name:find("MaiNha")) then
+            part.Anchored = false
+            local velocity = Instance.new("BodyVelocity", part)
+            velocity.Velocity = Vector3.new(0, 150, 0) -- Nhấc bổng lên cao
+            velocity.MaxForce = Vector3.new(4e6, 4e6, 4e6)
+            task.delay(3, function() velocity:Destroy() end)
+        end
+    end
+
+    -- 2. TRẬN ĐỘNG ĐẤT KINH HOÀNG
+    print("Step 2: Earthquake")
+    task.wait(1)
+    for i = 1, 60 do
+        local offset = Vector3.new(math.random(-3,3), math.random(-3,3), math.random(-3,3))
+        game.Players.LocalPlayer.Character.Humanoid.CameraOffset = offset
+        task.wait(0.05)
+    end
+    game.Players.LocalPlayer.Character.Humanoid.CameraOffset = Vector3.new(0,0,0)
+
+    -- 3. MÁI NHÀ ĐÁP XUỐNG (SMASH)
+    print("Step 3: Roof Crash")
+    for _, part in pairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and (part.Name:find("Roof") or part.Name:find("MaiNha")) then
+            local force = Instance.new("BodyVelocity", part)
+            force.Velocity = Vector3.new(0, -300, 0) -- Đập cực mạnh xuống đất
+            force.MaxForce = Vector3.new(4e6, 4e6, 4e6)
+            task.delay(1, function() force:Destroy() end)
+        end
+    end
+
+    -- 4. CẮT VỠ HÀNH TINH & VA CHẠM
+    task.wait(2)
+    print("Step 4: Planetary Slicing & Collision")
+    
+    -- Tạo mô hình Trái Đất và Mặt Trăng (Sử dụng Mesh để trông xịn hơn)
+    local Earth = Instance.new("Part", workspace)
+    Earth.Shape = Enum.PartType.Ball
+    Earth.Size = Vector3.new(150, 150, 150)
+    Earth.Position = Vector3.new(0, 1000, 500)
+    Earth.Color = Color3.fromRGB(0, 100, 255)
+    Earth.Anchored = true
+
+    local Moon = Instance.new("Part", workspace)
+    Moon.Shape = Enum.PartType.Ball
+    Moon.Size = Vector3.new(80, 80, 80)
+    Moon.Position = Vector3.new(400, 1200, 500)
+    Moon.Color = Color3.fromRGB(180, 180, 180)
+    Moon.Anchored = true
+
+    -- Hiệu ứng cắt vỡ (Tạo các tia sáng cắt ngang)
+    local beam = Instance.new("Part", workspace)
+    beam.Size = Vector3.new(500, 2, 500)
+    beam.Position = Earth.Position
+    beam.Color = Color3.fromRGB(255, 0, 0) -- Tia cắt màu đỏ
+    beam.Anchored = true
+    task.delay(1, function() beam:Destroy() end)
+
+    -- VA CHẠM (Dark Collision)
+    task.wait(1)
+    Earth.Anchored = false
+    Moon.Anchored = false
+    
+    local attract = Instance.new("BodyPosition", Moon)
+    attract.Position = Earth.Position
+    attract.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    attract.P = 20000
+
+    -- Kết thúc: Màn hình Glitch trắng đen (Đặc trưng của MINHTRI_DARK V2)
+    Moon.Touched:Connect(function(hit)
+        if hit == Earth then
+            local ex = Instance.new("Explosion", Earth)
+            ex.Position = Earth.Position
+            ex.BlastRadius = 1000
+            
+            -- Biến cả thế giới thành "Lỗi thực tại" (Missing Texture)
+            local colorCorrection = Instance.new("ColorCorrectionEffect", game.Lighting)
+            colorCorrection.Saturation = -1
+            colorCorrection.Contrast = 1
+        end
+    end)
+end
