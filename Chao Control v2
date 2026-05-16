@@ -1,0 +1,15 @@
+# 🌀 Chaos Control V2 - Roblox Script
+Bản nâng cấp mạnh mẽ cho kỹ năng ngưng đọng thời gian, được phát triển bởi **DARK CONTROL**.
+
+## ✨ Tính năng mới (V2)
+- **Visual Overhaul:** Hiệu ứng trắng đen và Blur toàn màn hình.
+- **Time Freeze:** Đóng băng toàn bộ Part và Humanoid trong Workspace.
+- **Optimized:** Code gọn hơn, tránh gây lag server.
+
+## 🚀 Cách sử dụng
+1. Copy code từ file `ChaosControlV2.lua`.
+2. Vào Roblox Studio, tạo một `LocalScript` trong `StarterCharacterScripts`.
+3. Dán code vào và tận hưởng!
+
+## ⚠️ Lưu ý
+Script này được thiết kế để bảo vệ bản quyền hình ảnh cho nhân vật **MINHTRI_DARK V2**.
