@@ -1,0 +1,116 @@
+-- DARK KARATE V2 - SCRIPT BY MINHTRI_DARK
+-- Hướng dẫn: Đặt trong StarterPlayer -> StarterCharacterScripts
+
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+local RootPart = Character:WaitForChild("HumanoidRootPart")
+local Mouse = Player:GetMouse()
+
+local ContextActionService = game:GetService("ContextActionService")
+local Debris = game:GetService("Debris")
+
+local combo = 1
+local lastAttack = 0
+local cooldown = 0.4
+
+-- Hàm tạo hiệu ứng hắc ám (Sức mạnh bóng tối)
+local function createDarkEffect(position)
+	local attachment = Instance.new("Attachment")
+	attachment.Position = position
+	attachment.Parent = workspace.Terrain
+	
+	-- Hiệu ứng khói đen
+	local smoke = Instance.new("ParticleEmitter")
+	smoke.Color = ColorSequence.new(Color3.fromRGB(10, 10, 10), Color3.fromRGB(0, 0, 0))
+	smoke.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 0)})
+	smoke.Texture = "rbxassetid://242910711" -- Texture khói mặc định
+	smoke.Lifetime = NumberRange.new(0.3, 0.5)
+	smoke.Rate = 50
+	smoke.Speed = NumberRange.new(3, 7)
+	smoke.Parent = attachment
+	
+	-- Hiệu ứng tia sét tím hắc ám
+	local sparks = Instance.new("ParticleEmitter")
+	sparks.Color = ColorSequence.new(Color3.fromRGB(138, 43, 226)) -- Màu tím Dark
+	sparks.Size = NumberSequence.new(0.5)
+	sparks.Lifetime = NumberRange.new(0.2, 0.4)
+	sparks.Rate = 30
+	sparks.Speed = NumberRange.new(5, 10)
+	sparks.SpreadAngle = Vector2.new(-180, 180)
+	sparks.Parent = attachment
+	
+	-- Tự động xóa hiệu ứng sau 0.5 giây
+	smoke:Emit(20)
+	sparks:Emit(15)
+	Debris:AddItem(attachment, 0.5)
+end
+
+-- Hàm xử lý gây sát thương và đẩy lùi (Knockback)
+local function dealDamage(hitPart, damageValue, knockbackForce)
+	local targetChar = hitPart.Parent
+	local targetHum = targetChar:FindFirstChildOfClass("Humanoid")
+	local targetRoot = targetChar:FindFirstChild("HumanoidRootPart")
+	
+	if targetHum and targetHum ~= Humanoid then
+		targetHum:TakeDamage(damageValue)
+		createDarkEffect(targetRoot.Position)
+		
+		-- Hiệu ứng đẩy lùi bằng lực bóng tối
+		if knockbackForce > 0 then
+			local bv = Instance.new("BodyVelocity")
+			bv.MaxForce = Vector3.new(1,0,1) * 30000
+			bv.Velocity = RootPart.CFrame.LookVector * knockbackForce
+			bv.Parent = targetRoot
+			Debris:AddItem(bv, 0.2)
+		end
+	end
+end
+
+-- Hàm kích hoạt đòn đánh võ thuật
+local function attack()
+	local now = tick()
+	if now - lastAttack < cooldown then return end
+	lastAttack = now
+	
+	-- Kiểm tra va chạm phía trước (Hitbox)
+	local hitbox = Instance.new("Part")
+	hitbox.Size = Vector3.new(4, 5, 4)
+	hitbox.Transparency = 1
+	hitbox.CanCollide = false
+	hitbox.CFrame = RootPart.CFrame * CFrame.new(0, 0, -3)
+	hitbox.Parent = workspace
+	Debris:AddItem(hitbox, 0.1)
+	
+	-- Xử lý chuỗi Combo DARK Karate v2
+	if combo == 1 then
+		print("DARK Karate V2: Đấm thẳng bóng tối!")
+		-- Bạn có thể chạy Animation đấm ở đây
+		hitbox.Touched:Connect(function(hit)
+			dealDamage(hit, 10, 5) -- Sát thương 10, đẩy lùi ít
+		end)
+		combo = 2
+	elseif combo == 2 then
+		print("DARK Karate V2: Cú móc hắc ám!")
+		hitbox.Touched:Connect(function(hit)
+			dealDamage(hit, 12, 5)
+		end)
+		combo = 3
+	elseif combo == 3 then
+		print("DARK Karate V2: LIÊN HOÀN CƯỚC BÓNG TỐI (FINISHER)!")
+		hitbox.Touched:Connect(function(hit)
+			dealDamage(hit, 25, 35) -- Chiêu cuối combo: Sát thương lớn, đẩy lùi cực mạnh
+		end)
+		combo = 1 -- Reset combo
+	end
+	
+	-- Reset combo nếu đứng yên quá lâu không đánh
+	delay(1.5, function()
+		if tick() - lastAttack >= 1.5 then
+			combo = 1
+		end
+	end)
+end
+
+-- Nhấn chuột trái để xuất chiêu Võ DARK Karate v2
+Mouse.Button1Down:Connect(attack)
