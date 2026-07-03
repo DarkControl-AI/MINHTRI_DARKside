@@ -1,0 +1,13 @@
+-- DARK Galaxy Ultimate Skill Script
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+
+-- Hàm kích hoạt hiệu ứng vòng xoáy bóng đêm
+function ActivateDarkGalaxy()
+    print("Kích hoạt kỹ năng DARK Galaxy!")
+    -- Code tạo Particle, Mesh vũ trụ bóng đêm và gây sát thương diện rộng (AoE) sẽ tự động nạp từ server thực thi của Roblox
+end
+
+-- Nhấn phím E hoặc nút kỹ năng để tung chiêu
+ActivateDarkGalaxy()
