@@ -1,0 +1,88 @@
+# MINHTRI_DARKside
+-- DARK Boost Blade + Fly (Tháp PVP)
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local root = character:WaitForChild("HumanoidRootPart")
+
+local flying = false
+local flySpeed = 80
+
+print("DARK Boost Blade + Fly Activated ⚔️🖤")
+
+-- Dark Aura
+local aura = Instance.new("ParticleEmitter")
+aura.Texture = "rbxassetid://243660364"
+aura.Color = ColorSequence.new(Color3.fromRGB(50, 0, 100))
+aura.Size = NumberSequence.new(3)
+aura.Lifetime = NumberRange.new(2)
+aura.Rate = 100
+aura.Parent = root
+
+-- Fly Function
+local function toggleFly()
+    flying = not flying
+    if flying then
+        humanoid.PlatformStand = true
+        print("Bay mode ON - Nhấn F để bay")
+    else
+        humanoid.PlatformStand = false
+        print("Bay mode OFF")
+    end
+end
+
+-- Fly Loop
+game:GetService("RunService").Heartbeat:Connect(function()
+    if flying and root then
+        local camera = workspace.CurrentCamera
+        local moveDirection = Vector3.new()
+
+        if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then moveDirection = moveDirection + camera.CFrame.LookVector end
+        if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then moveDirection = moveDirection - camera.CFrame.LookVector end
+        if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then moveDirection = moveDirection - camera.CFrame.RightVector end
+        if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then moveDirection = moveDirection + camera.CFrame.RightVector end
+
+        if moveDirection.Magnitude > 0 then
+            root.Velocity = moveDirection.Unit * flySpeed
+        else
+            root.Velocity = Vector3.new(0, 0, 0)
+        end
+    end
+end)
+
+-- Attack (Nhấn E)
+local function BoostBladeAttack()
+    if not root then return end
+    for i = 1, 6 do
+        local slash = Instance.new("Part")
+        slash.Size = Vector3.new(10, 1.5, 1)
+        slash.Transparency = 0.4
+        slash.Color = Color3.fromRGB(90, 0, 180)
+        slash.Anchored = true
+        slash.CanCollide = false
+        slash.CFrame = root.CFrame * CFrame.new(0, 0, -8) * CFrame.Angles(0, math.rad(i*60), 0)
+        slash.Parent = workspace
+        game.Debris:AddItem(slash, 0.7)
+        
+        -- Damage nearby
+        for _, v in pairs(workspace:GetChildren()) do
+            if v:FindFirstChild("Humanoid") and v ~= character and v:FindFirstChild("HumanoidRootPart") then
+                if (v.HumanoidRootPart.Position - root.Position).Magnitude < 18 then
+                    v.Humanoid:TakeDamage(45)
+                end
+            end
+        end
+    end
+end
+
+-- Keybinds
+game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.F then
+        toggleFly()
+    elseif input.KeyCode == Enum.KeyCode.E then
+        BoostBladeAttack()
+    end
+end)
+
+print("Nhấn F = Bay | Nhấn E = Dark Blade Attack")
